@@ -73,3 +73,21 @@ CREATE TABLE user_roles (
     FOREIGN KEY (`role_id`) REFERENCES roles(`id`),
     UNIQUE `user_role` (`user_id`, `role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `movies`;
+CREATE TABLE movies(
+    `id` INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `tmdb_id` INT NOT NULL UNIQUE,
+    `title` VARCHAR(255),
+    `overview` TEXT,
+    `release_date` DATE,
+    `poster_path` VARCHAR(255),
+    `backdrop_path` VARCHAR(255),
+    `popularity` DECIMAL(10,2),
+    `vote_average` DECIMAL(3,1),
+    `vote_count` INT,
+    `language` VARCHAR(10),
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    `edited_by` varchar(100) NOT NULL DEFAULT ''
+);

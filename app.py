@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 import json
 from pathlib import Path
 import datetime
-import speech_recognition as sr
-from pydub import AudioSegment
 from datetime import datetime
 import logging
 import re

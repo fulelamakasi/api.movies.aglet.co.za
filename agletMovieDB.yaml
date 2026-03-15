@@ -3422,7 +3422,7 @@ components:
           example: "0847654321"
       example:
         {
-          email: "jane@radiorecord.co.za",
+          email: "jane@aglet.co.za",
           name: "Joe Soap",
           password: "12345678",
           phonenumber: "0717654321"
@@ -3442,7 +3442,7 @@ components:
         email:
           description: The users unique email address.
           type: string
-          example: "j.doe@radiorecord.co.za"
+          example: "j.doe@aglet.co.za"
         name:
           description: The name of a user
           type: string

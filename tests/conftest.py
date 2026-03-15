@@ -6,7 +6,7 @@ BASE_URL = "http://127.0.0.1:5000/api"
 @pytest.fixture
 def headers():
     return {
-        "User-Id": "10235463-8728-0913-9837-127634524310",
+        "User-Id": "79f04878-a79d-4ea9-ba40-8ee21abab16c",
         "Content-Type": "application/json"
     }
 

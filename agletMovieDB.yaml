@@ -1,0 +1,3510 @@
+openapi: 3.0.3
+info:
+  title: Aglet The Movie dB
+  description: |-
+    The following information is kept:
+    All endpoints related to a Aglets movies app
+    
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5000/api
+paths:
+  /auth/login/v1:
+    post:
+      tags:
+        - Authentication
+      summary: Returns an active user record.
+      description: >-
+        Verifies user credentials and returns a user object with a token for the user.
+      operationId: login
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'   
+        '400':
+          description: Required fields are missing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Authentication Failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'                    
+        '500':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/renew-token/v1:
+    put:
+      tags:
+        - Authentication
+      summary: Returns an active user record with a new user-Id.
+      description: >-
+        Verifies user credentials and returns a new user object token for the api user.
+      operationId: renew_token
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'   
+        '400':
+          description: Required fields are missing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Authentication Failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'                    
+        '500':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /contact_us/v1:
+    post:
+      tags:
+        - ContactUs
+      summary: Create a new contact us record.
+      description: >-
+        Create a new contact us record.
+      operationId: create_contact_us
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactUsRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactUsResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Contact Us record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - ContactUs
+      summary: Fetch a full list of active contact us
+      description: Fetch a full list of contact_us.  The list is sorted by the date created order.
+      operationId: get_all_contact_us
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactUsResponse'
+
+  /contact_us/v1/{contact_us_id}:
+    get:
+      tags:
+        - ContactUs
+      summary: Get for contact us by id.
+      description: >-
+        Search for contact us by id. 
+      operationId: get_contact_us_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: contact_us_id
+          in: path
+          description: >-
+            The contact us id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactUsResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Contact us record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - ContactUs
+      summary: Update a contact us record.
+      description: >-
+        Update an existing contact us record.  The record with the ID must exist.
+      operationId: update_contact_us
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: contact_us_id
+          in: path
+          description: >-
+            The contact us id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactUsResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/ContactUsResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Contact Us record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - ContactUs
+      summary: Delete a contact us record.
+      description: >-
+        Delete an existing contact us record.  The record with the ID may or may not exist.
+      operationId: delete_contact_us
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: contact_us_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Contact Us record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /contact_us/get-actioned/v1/{is_actioned}:
+    get:
+      tags:
+        - ContactUs
+      summary: Get actioned or non actioned contact us list.
+      description: >-
+        Search for actioned or non actioned contact us list. 
+      operationId: get_actioned_contact_us
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_actioned
+          in: path
+          description: >-
+            The is_actioned flag in contact us either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactUsResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Contact Us record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /languages/v1:
+    post:
+      tags:
+        - Languages
+      summary: Create a new language record.
+      description: >-
+        Create a new language record.
+      operationId: create_language
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Language record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Languages
+      summary: Fetch a full list of active languages
+      description: Fetch a full list of languages.  The list is sorted by the date created order.
+      operationId: get_all_languages
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageResponse'
+
+  /languages/v1/{language_id}:
+    get:
+      tags:
+        - Languages
+      summary: Get for languages By id.
+      description: >-
+        Search for language by id. 
+      operationId: get_language_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: language_id
+          in: path
+          description: >-
+            The language id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Language record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Languages
+      summary: Update a language record.
+      description: >-
+        Update an existing language record.  The record with the ID must exist.
+      operationId: update_language
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: language_id
+          in: path
+          description: >-
+            The language id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/LanguageResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Language record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Languages
+      summary: Delete a languages record.
+      description: >-
+        Delete an existing languages record.  The record with the ID may or may not exist.
+      operationId: delete_language
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: language_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Language record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /languages/get-active/v1/{is_deleted}:
+    get:
+      tags:
+        - Languages
+      summary: Get active or in active languages list.
+      description: >-
+        Search for active or in active languages list. 
+      operationId: get_active_languages
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_deleted
+          in: path
+          description: >-
+            The languages flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LanguageResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /movies/v1:
+    post:
+      tags:
+        - Movies
+      summary: Create a new movie record for an external & internal organisation.
+      description: >-
+        Create a new Movie record.
+      operationId: create_movie
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movies record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Movies
+      summary: Fetch a full list of active movies
+      description: Fetch a full list of movies.  The list is sorted by the date created order.
+      operationId: get_all_movies
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieResponse'
+
+  /movies/v1/{movie_id}:
+    get:
+      tags:
+        - Movies
+      summary: Get for Movies By id.
+      description: >-
+        Search for permission by id. 
+      operationId: get_movie_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_id
+          in: path
+          description: >-
+            The Movies id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Movies
+      summary: Update an Movies record.
+      description: >-
+        Update an existing Movies record.  The record with the ID must exist.
+      operationId: update_movie
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_id
+          in: path
+          description: >-
+            The movie id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/MovieResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Movie record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Movies
+      summary: Delete a Movies record.
+      description: >-
+        Delete an existing Movies record.  The record with the ID may or may not exist.
+      operationId: delete_movie
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Movies record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /movies/get-active/v1/{is_deleted}:
+    get:
+      tags:
+        - Movies
+      summary: Get active or in active Movies list.
+      description: >-
+        Search for active or in active Movies list. 
+      operationId: get_active_movies
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_deleted
+          in: path
+          description: >-
+            The Movies flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /movies/get-by-language/v1/{language_id}:
+    get:
+      tags:
+        - Movies
+      summary: Get all movies list by language.
+      description: >-
+        Search for active or in active movies list. 
+      operationId: get_active_movies_by_language
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: language_id
+          in: path
+          description: >-
+            The langue id being queried
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /permissions/v1:
+    post:
+      tags:
+        - Permissions
+      summary: Create a new permissions record for an external & internal organisation.
+      description: >-
+        Create a new permissions record.
+      operationId: create_permission
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Permissions
+      summary: Fetch a full list of active permissions
+      description: Fetch a full list of permissions.  The list is sorted by the date created order.
+      operationId: get_all_permissions
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PermissionResponse'
+
+  /permissions/v1/{permission_id}:
+    get:
+      tags:
+        - Permissions
+      summary: Get for permission By id.
+      description: >-
+        Search for permission by id. 
+      operationId: get_permission_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: permission_id
+          in: path
+          description: >-
+            The permissions id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Permissions
+      summary: Update an permission record.
+      description: >-
+        Update an existing permission record.  The record with the ID must exist.
+      operationId: update_permissions
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: permission_id
+          in: path
+          description: >-
+            The permission id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/PermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Permissions
+      summary: Delete a permissions record.
+      description: >-
+        Delete an existing permissions record.  The record with the ID may or may not exist.
+      operationId: delete_permission
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: permission_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /permissions/get-active/v1/{is_active}:
+    get:
+      tags:
+        - Permissions
+      summary: Get active or in active permissions list.
+      description: >-
+        Search for active or in active permissions list. 
+      operationId: get_active_permissions
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_active
+          in: path
+          description: >-
+            The permissions flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /role_permissions/v1:
+    post:
+      tags:
+        - RolePermission
+      summary: Create a new role permission record for an external & internal organisation.
+      description: >-
+        Create a new role permission record.
+      operationId: create_role_permission
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolePermissionRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolePermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - RolePermission
+      summary: Fetch a full list of active role permissions
+      description: Fetch a full list of role permissions.  The list is sorted by the date created order.
+      operationId: get_all_role_permissions
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolePermissionResponse'
+
+  /role_permissions/v1/{role_permission_id}:
+    get:
+      tags:
+        - RolePermission
+      summary: Get for permission By id.
+      description: >-
+        Search for permission by id. 
+      operationId: get_role_permission_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_permission_id
+          in: path
+          description: >-
+            The role_permission_id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolePermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - RolePermission
+      summary: Update an role permissions record.
+      description: >-
+        Update an existing role permissions record.  The record with the ID must exist.
+      operationId: update_role_permissions
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_permission_id
+          in: path
+          description: >-
+            The role_permission_id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolePermissionResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/RolePermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - RolePermission
+      summary: Delete a role permissions record.
+      description: >-
+        Delete an existing role permissions record.  The record with the ID may or may not exist.
+      operationId: delete_role_permission
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_permission_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /role_permissions/get-active/v1/{is_active}:
+    get:
+      tags:
+        - RolePermission
+      summary: Get active or in active role permissions list.
+      description: >-
+        Search for active or in active role permissions list. 
+      operationId: get_active_role_permissions
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_active
+          in: path
+          description: >-
+            The role permissions flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolePermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /role_permissions/get-by-permission/v1/{permission_id}:
+    get:
+      tags:
+        - RolePermission
+      summary: Get active or in active role permissions list.
+      description: >-
+        Search for active or in active role permissions list. 
+      operationId: get_active_role_permissions_by_permission
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: permission_id
+          in: path
+          description: >-
+            The permission id being queried
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolePermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /role_permissions/get-by-role/v1/{role_id}:
+    get:
+      tags:
+        - RolePermission
+      summary: Get all role permissions list by role.
+      description: >-
+        Search for active or in active role permissions list. 
+      operationId: get_active_role_permissions_by_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_id
+          in: path
+          description: >-
+            The role id being queried
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolePermissionResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /roles/v1:
+    post:
+      tags:
+        - Roles
+      summary: Create a new roles record for an external & internal organisation.
+      description: >-
+        Create a new roles record.
+      operationId: create_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Roles
+      summary: Fetch a full list of active roles
+      description: Fetch a full list of roles. The list is sorted by the date created order.
+      operationId: get_all_roles
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleResponse'
+
+  /roles/v1/{role_id}:
+    get:
+      tags:
+        - Roles
+      summary: Get for role By id.
+      description: >-
+        Search for role by id. 
+      operationId: get_roles_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_id
+          in: path
+          description: >-
+            The role id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Roles
+      summary: Update an role record.
+      description: >-
+        Update an existing role record.  The record with the ID must exist.
+      operationId: update_roles
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_id
+          in: path
+          description: >-
+            The role id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Roles
+      summary: Delete a roles record.
+      description: >-
+        Delete an existing roles record.  The record with the ID may or may not exist.
+      operationId: delete_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /roles/get-active/v1/{is_active}:
+    get:
+      tags:
+        - Roles
+      summary: Get active or in active roles list.
+      description: >-
+        Search for active or in active roles list. 
+      operationId: get_active_roles
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_active
+          in: path
+          description: >-
+            The roles flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /user_roles/v1:
+    post:
+      tags:
+        - UserRole
+      summary: Create a new user role record for an external & internal organisation.
+      description: >-
+        Create a new user role record.
+      operationId: create_user_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: User Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - UserRole
+      summary: Fetch a full list of active role permissions
+      description: Fetch a full list of role permissions.  The list is sorted by the date created order.
+      operationId: get_all_user_roles
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRoleResponse'
+
+  /user_roles/v1/{user_role_id}:
+    get:
+      tags:
+        - UserRole
+      summary: Get for permission By id.
+      description: >-
+        Search for permission by id. 
+      operationId: get_user_role_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_role_id
+          in: path
+          description: >-
+            The user_role_id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: User Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - UserRole
+      summary: Update an user role record.
+      description: >-
+        Update an existing user role record.  The record with the ID must exist.
+      operationId: update_user_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_role_id
+          in: path
+          description: >-
+            The user_role_id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/UserRoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: User Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - UserRole
+      summary: Delete a user role record.
+      description: >-
+        Delete an existing user role record.  The record with the ID may or may not exist.
+      operationId: delete_user_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_role_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: User Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /user_roles/get-active/v1/{is_active}:
+    get:
+      tags:
+        - UserRole
+      summary: Get active or in active user role list.
+      description: >-
+        Search for active or in active user role list. 
+      operationId: get_active_user_roles
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_active
+          in: path
+          description: >-
+            The user role flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /user_roles/get-by-user/v1/{user_id}:
+    get:
+      tags:
+        - UserRole
+      summary: Get active or in active user role list.
+      description: >-
+        Search for active or in active user role list. 
+      operationId: get_user_roles_by_user
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_id
+          in: path
+          description: >-
+            The user id being queried
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Role Permission record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /user_roles/get-by-role/v1/{role_id}:
+    get:
+      tags:
+        - UserRole
+      summary: Get all role permissions list by role.
+      description: >-
+        Search for active or in active role permissions list. 
+      operationId: get_user_roles_by_role
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: role_id
+          in: path
+          description: >-
+            The role id being queried
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRoleResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: User Role record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /users/v1:
+    post:
+      tags:
+        - Users
+      summary: Create a new user record.
+      description: >-
+        Create a new user record.
+        The following attributes (id, password, is_active, reset_password, created_at, updated_at) are ignored and will be assigned by this endpoint.
+      operationId: create_user
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRequest'          
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '204':
+          description: User record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '400':
+          description: Required fields are missing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Authentication Failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'                    
+        '500':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Users
+      summary: Fetch a full list of users
+      description: Fetch a full list of users
+      operationId: get_users
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+
+  /users/v1/{user_id}:
+    get:
+      tags:
+        - Users
+      summary: Get a specific user by id.
+      description: >-
+        Search for a user whose id correlates to the id provided.
+      operationId: get_user_by_id
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+  
+    put:
+      tags:
+        - Users
+      summary: Update a user record.
+      description: >-
+        Update an existing user record.  The record with the ID must exist.
+      operationId: update_user
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '204':
+          description: User record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'   
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Authentication Failed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'       
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete a user record.
+      description: >-
+        Delete an existing user record.  The record with the ID may or may not exist.
+        If no record exists with the given ID, the operation will still be successful.
+        The If-Match header parameter contains the version number of the record to delete and 
+        must match the version number on record.
+        The User-Id is the ID of the user or application requesting the delete.
+      operationId: delete_user
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: User record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /users/get-active/v1/{is_active}:
+    get:
+      tags:
+        - Users
+      summary: Retrieve a specific user record with a given user ID
+      description: >-
+        Search for an active user.
+      operationId: get_active_users
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_active
+          in: path
+          description: >-
+            A flag of the state of the user be it active (1) or in active (0)
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+
+components:
+  schemas:
+    ContactUsRequest:
+      description: A record of contact_us lists
+      required:
+        - name
+        - message
+        - email
+        - phone_number
+        - company_name
+      type: object
+      properties:
+        name:
+          description: >-
+            The name of the person who needs to be contacted.
+          type: string
+          example: "John Doe"
+        message:
+          description: A short descriptive text about the reason why they need to be contacted.
+          type: string
+          example: "I am enquiring on an inquiry about the inquiry of inquiries"
+        email:
+          description: >-
+            The email of the person who needs to be contacted.
+          type: string
+          example: "john@aglet.co.za"
+        phone_number:
+          description: The phone number of the person who needs to be contacted..
+          type: string
+          example: "0797666321"
+        company_name:
+          description: >-
+            The organisation of the person who needs to be contacted.
+          type: string
+          example: "Swift Operators"
+      example:
+        {
+          name: "John Doe",
+          message: "I am enquiring on an inquiry about the inquiry of inquiries",
+          email: "john@aglet.co.za",
+          phone_number: "0797666321",
+          company_name: "Swift Operators"
+        }
+
+    ContactUsResponse:
+      description: A record for a specific language
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the keyword record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "1"
+        name:
+          description: >-
+            The name of the person who needs to be contacted.
+          type: string
+          example: "John Doe"
+        message:
+          description: A short descriptive text about the reason why they need to be contacted.
+          type: string
+          example: "I am enquiring on an inquiry about the inquiry of inquiries"
+        email:
+          description: >-
+            The email of the person who needs to be contacted.
+          type: string
+          example: "john@aglet.co.za"
+        phone_number:
+          description: The phone number of the person who needs to be contacted..
+          type: string
+          example: "0797666321"
+        company_name:
+          description: >-
+            The organisation of the person who needs to be contacted.
+          type: string
+          example: "Swift Operators"
+        is_actioned:
+          description: A flag to state whether the contact us has been responded to or not.
+          type: integer
+          example: "0"                   
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 2,
+          name: "John Doe",
+          message: "I am enquiring on an inquiry about the inquiry of inquiries",
+          email: "john@aglet.co.za",
+          phone_number: "0797666321",
+          company_name: "Swift Operators",
+          is_actioned: 0,
+          created_at: "2026-03-15 19:00:00",
+          updated_at: ""
+        }
+
+    LanguageRequest:
+      description: A record of languages
+      required:
+        - name
+        - description
+      type: object
+      properties:
+        name:
+          description: >-
+            A descriptive name of a language.
+          type: string
+          example: "English"
+        description:
+          description: A short descriptive text about the language.
+          type: string
+          example: "all"
+      example:
+        {
+          name: "English",
+          description: "The oldest language"
+        }
+
+    LanguageResponse:
+      description: A record for a specific language
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the keyword record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "1"
+        name:
+          description: >-
+            A descriptive name of the language.
+          type: string
+          example: "French"
+        description:
+          description: A short descriptive text about the language.
+          type: string
+          example: "it is a language"
+        is_active:
+          description: A flag to state whether the language is active or not.
+          type: integer
+          example: "0"          
+        is_deleted:
+          description: A flag to state whether the language is marked as deleted or not.
+          type: integer
+          example: "0"          
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 2,
+          name: "English",
+          description: "The oldest language",
+          is_active: 1,
+          is_deleted: 0,
+          created_at: "2026-03-15 19:00:00",
+          updated_at: ""
+        }
+
+    LoginRequest:
+      description: A record for monitored keywords or phrases which a monitored by organisations
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          description: The users unique email address.
+          type: string
+          example: "j.doe@radiorecord.co.za"
+        password:
+          description: The password of the user.
+          type: string
+          example: "123456"
+      example:
+        {
+          email: "jane@radiorecord.co.za",
+          password: "ThisIsMyStrongPassword"
+        }
+
+    MovieRequest:
+      description: A record of movies lists from the movie db
+      required:
+        - tmdb_id
+        - title
+        - overview
+        - release_date
+        - poster_path
+        - backdrop_path
+        - popularity
+        - vote_average
+        - vote_count
+        - language_id
+      type: object
+      properties:
+        tmdb_id:
+          description: >-
+            The identifier coming from the movie db list.
+          type: integer
+          example: "1"
+        title:
+          description: The title of the movie.
+          type: string
+          example: "The Boondock Saints"
+        overview:
+          description: >-
+            A short description of the movie.
+          type: string
+          example: "The Boondock Saints is a 1999 vigilante action thriller film written and directed by Troy Duffy in his feature directorial debut."
+        release_date:
+          description: The date which the movie was released.
+          type: string
+          example: "04 August 1999"
+        poster_path:
+          description: >-
+            The path of the poster.
+          type: string
+          example: "random string blob text"
+        backdrop_path:
+          description: >-
+            The path of the backdrop image.
+          type: string
+          example: "random string blob text"
+        popularity:
+          description: How well the movie did.
+          type: string
+          example: "100%"
+        vote_average:
+          description: >-
+            The average votes the movie received.
+          type: string
+          example: "70%"
+        vote_count:
+          description: The tally votes the movie received.
+          type: string
+          example: "70%"
+        language_id:
+          description: >-
+            The language of the movie.
+          type: integer
+          example: 16
+      example:
+        {
+          tmdb_id: "1",
+          title: "The Boondock Saints",
+          overview: "The Boondock Saints is a 1999 vigilante action thriller film written and directed by Troy Duffy in his feature directorial debut.",
+          release_date: "04 August 1999",
+          poster_path: "random string blob text",
+          backdrop_path: "random string blob text",
+          popularity: "100%",
+          vote_average: "70%",
+          vote_count: "70%",
+          language_id: "1"
+        }
+
+    MovieResponse:
+      description: A record for a specific language
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the keyword record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "1"
+        tmdb_id:
+          description: >-
+            The identifier coming from the movie db list.
+          type: integer
+          example: "1"
+        title:
+          description: The title of the movie.
+          type: string
+          example: "The Boondock Saints"
+        overview:
+          description: >-
+            A short description of the movie.
+          type: string
+          example: "The Boondock Saints is a 1999 vigilante action thriller film written and directed by Troy Duffy in his feature directorial debut."
+        release_date:
+          description: The date which the movie was released.
+          type: string
+          example: "04 August 1999"
+        poster_path:
+          description: >-
+            The path of the poster.
+          type: string
+          example: "random string blob text"
+        backdrop_path:
+          description: >-
+            The path of the backdrop image.
+          type: string
+          example: "random string blob text"
+        popularity:
+          description: How well the movie did.
+          type: string
+          example: "100%"
+        vote_average:
+          description: >-
+            The average votes the movie received.
+          type: string
+          example: "70%"
+        vote_count:
+          description: The tally votes the movie received.
+          type: string
+          example: "70%"
+        language_id:
+          description: >-
+            The language of the movie.
+          type: integer
+          example: 16          
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 2,
+          tmdb_id: "1",
+          title: "The Boondock Saints",
+          overview: "The Boondock Saints is a 1999 vigilante action thriller film written and directed by Troy Duffy in his feature directorial debut.",
+          release_date: "04 August 1999",
+          poster_path: "random string blob text",
+          backdrop_path: "random string blob text",
+          popularity: "100%",
+          vote_average: "70%",
+          vote_count: "70%",
+          language_id: "1",
+          is_deleted: 0,
+          created_at: "2026-03-15 19:00:00",
+          updated_at: ""
+        }
+
+    PermissionRequest:
+      description: A record for an permissioning of the application
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          description: >-
+            A unique name of the permissioning model an organisation has created.
+          type: string
+          example: "Admin"
+        description:
+          description: The decriptive text about the new permission.
+          type: string
+          example: "What the permission is about"
+      example:
+        {
+          name: "Admin",
+          description: "What the permission is about"
+        }
+
+    PermissionResponse:
+      description: A record for an permissioning of the application
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the permission record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: 9
+        name:
+          description: >-
+            A unique name of the permissioning model an organisation has created.
+          type: string
+          example: "Admin"
+        description:
+          description: The decriptive text about the new permission.
+          type: string
+          example: "What the permission is about"
+        is_active:
+          description: A flag to state whether the permission of the role was removed or not.
+          type: integer
+          example: "0"
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 3,
+          name: "Admin",
+          description: "What the permission is about",
+          is_active: 1,
+          is_deleted: 0,
+          created_at: "2020-03-26 19:00:00",
+          updated_at: ""
+        }
+
+    RolePermissionRequest:
+      description: A record for a permissioning of roles where they have access and where not
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the permission role record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "6"
+        role_id:
+          description: The id of the role in the application
+          type: integer
+          example: "95"
+        permission_id:
+          description: The id of the permission in the application
+          type: integer
+          example: "16"  
+        is_active:
+          description: A flag to state whether the permission of the role was removed or not.
+          type: integer
+          example: "0"
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 3,
+          role_id: 95,
+          permission_id: 16,
+          is_active: 1,
+          created_at: "2020-03-26 19:00:00",
+          updated_at: ""
+        }
+
+    RolePermissionResponse:
+      description: A record for a permissioning of roles where they have access and where not
+      required:
+        - id
+        - role_id
+        - permission_id
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the permission role record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "6"
+        role_id:
+          description: The id of the role in the application
+          type: integer
+          example: "95"
+        permission_id:
+          description: The id of the permission in the application
+          type: integer
+          example: "16"  
+        is_active:
+          description: A flag to state whether the permission of the role was removed or not.
+          type: integer
+          example: "0"
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 3,
+          role_id: 95,
+          permission_id: 16,
+          is_active: 1,
+          is_deleted: 0,
+          created_at: "2020-03-26 19:00:00",
+          updated_at: ""
+        }
+
+    RoleRequest:
+      description: A record for a role which exists in the application
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          description: >-
+            A unique name of the application role an organisation has created.
+          type: string
+          example: "Video Editor"
+        description:
+          description: The decriptive text about the new role.
+          type: string
+          example: "What the role is about"
+      example:
+        {
+          name: "Video Editor",
+          description: "What the role is about"
+        }
+
+    RoleResponse:
+      description: A record for a role which exists in the application
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the roles record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "1"
+        name:
+          description: >-
+            A unique name of the application role an organisation has created.
+          type: string
+          example: "Video Editor"
+        description:
+          description: The decriptive text about the new role.
+          type: string
+          example: "What the role is about"
+        is_active:
+          description: A flag to state whether the role is active or not.
+          type: integer
+          example: "0"          
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 1,
+          name: "Video Editor",
+          description: "What the role is about",
+          is_active: 1,
+          is_deleted: 0,
+          created_at: "2020-03-26 19:00:00",
+          updated_at: ""
+        }
+
+    UserRoleRequest:
+      description: A record for a role for users where they have access and where not
+      required:
+        - role_id
+        - user_id
+      type: object
+      properties:
+        role_id:
+          description: The id of the role in the application
+          type: integer
+          example: "95"
+        user_id:
+          description: The id of the user from the application
+          type: integer
+          example: "16"  
+      example:
+        {
+          role_id: 95,
+          user_id: 16
+        }
+
+    UserRoleResponse:
+      description: A record for a role for users where they have access and where not
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the user role record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "6"
+        role_id:
+          description: The id of the role in the application
+          type: integer
+          example: "95"
+        user_id:
+          description: The id of the user from the application
+          type: integer
+          example: "16"  
+        is_active:
+          description: A flag to state whether the role for the user was removed or not.
+          type: integer
+          example: "0"
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 3,
+          role_id: 95,
+          user_id: 16,
+          is_active: 1,
+          is_deleted: 0,
+          created_at: "2020-03-26 19:00:00",
+          updated_at: ""
+        }
+
+    UserRequest:
+      description: >-
+        A record holding a single user information.
+      required:
+        - email
+        - name
+        - password
+        - phonenumber
+      type: object
+      properties:
+        email:
+          description: The users unique email address.
+          type: string
+          example: "j.doe@aglet.co.za"
+        name:
+          description: The name of a user
+          type: string
+          example: "Joe Soap"
+        password:
+          description: The password of a user
+          type: string
+          example: "12345678"     
+        phonenumber:
+          description: The cellphone number of the user
+          type: string
+          example: "0847654321"
+      example:
+        {
+          email: "jane@radiorecord.co.za",
+          name: "Joe Soap",
+          password: "12345678",
+          phonenumber: "0717654321"
+        }
+
+    UserResponse:
+      description: >-
+        A record holding a single user information.
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of this user record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: 1
+        email:
+          description: The users unique email address.
+          type: string
+          example: "j.doe@radiorecord.co.za"
+        name:
+          description: The name of a user
+          type: string
+          example: "Joe Soap"   
+        phonenumber:
+          description: The cellphone number of the user
+          type: string
+          example: "0847654321"
+        password:
+          description: The password of the user.
+          type: string
+          example: "123456"
+        is_active:
+          description: The active or in-active state of the user.
+          type: integer
+          example: 1
+        is_deleted:
+          description: The flag of a state of the user whether deleted or not.
+          type: integer
+          example: 1
+        token:
+          description: A system generated token used for validation
+          type: string
+          format: uuid
+          example: "10235463-8728-0913-9837-127634524310"
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 1,
+          email: "jane@aglet.co.za",
+          first_name: "Jane Doe",
+          phonenumber: "0827654321",
+          password: "7c222fb2927d828af22f592134e8932480637c0d",
+          is_active: 1,
+          is_deleted: 0,
+          token: "10235463-8728-0913-9837-127634524310",
+          created_at: "2020-03-26 19:00:00",
+          updated_at: ""
+        }
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+          example: "ERR_INVALID_PAYLOAD"
+          description: A unique error code identifying the type of error
+        message:
+          type: string
+          example: "The provided payload is invalid."
+          description: A human-readable error message
+        details:
+          type: string
+          example: "Manufacturer name is missing."
+          description: Additional details about the error when available

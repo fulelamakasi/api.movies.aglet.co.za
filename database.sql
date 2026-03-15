@@ -3,6 +3,36 @@ DROP DATABASE IF EXISTS aglet_movies;
 CREATE DATABASE IF NOT EXISTS aglet_movies;
 USE aglet_movies;
 
+DROP TABLE IF EXISTS `languages`;
+CREATE TABLE languages (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL,
+    `description` TEXT NOT NULL,
+    `is_active` TINYINT(1) NOT NULL DEFAULT '1',
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    `edited_by` varchar(100) NOT NULL DEFAULT '',
+    FULLTEXT `descriptionx` (`description`),
+    UNIQUE (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `contactus`;
+CREATE TABLE contactus (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
+    `phone_number` VARCHAR(20) NOT NULL,
+    `company_name` VARCHAR(100) NOT NULL,
+    `message` TEXT NOT NULL,
+    `is_actioned` TINYINT(1) NOT NULL DEFAULT '0',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    `edited_by` varchar(100) NOT NULL DEFAULT '',
+    FULLTEXT `descriptionx` (`description`),
+    UNIQUE (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -11,6 +41,7 @@ CREATE TABLE `users` (
   `phonenumber` varchar(191) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 0,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
   `token` VARCHAR(255) NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
@@ -25,6 +56,7 @@ CREATE TABLE permissions (
     `name` VARCHAR(100) NOT NULL,
     `description` TEXT NOT NULL,
     `is_active` TINYINT(1) NOT NULL DEFAULT '1',
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     `edited_by` varchar(100) NOT NULL DEFAULT '',
@@ -39,6 +71,7 @@ CREATE TABLE roles (
     `description` TEXT NOT NULL,
     `is_active` TINYINT(1) NOT NULL DEFAULT '1',
     `is_admin` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     `edited_by` varchar(100) NOT NULL DEFAULT '',
@@ -54,6 +87,7 @@ CREATE TABLE role_permissions (
     `permission_id` INT UNSIGNED NOT NULL,
     FOREIGN KEY (`permission_id`) REFERENCES permissions(`id`),
     `is_active` TINYINT(1) NOT NULL DEFAULT '1',
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     `edited_by` varchar(100) NOT NULL DEFAULT '',
@@ -66,6 +100,7 @@ CREATE TABLE user_roles (
     `user_id` INT UNSIGNED NOT NULL,
     `role_id` INT UNSIGNED NOT NULL,
     `is_active` TINYINT(1) NOT NULL DEFAULT '1',
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     `edited_by` varchar(100) NOT NULL DEFAULT '',
@@ -86,7 +121,9 @@ CREATE TABLE movies(
     `popularity` DECIMAL(10,2),
     `vote_average` DECIMAL(3,1),
     `vote_count` INT,
-    `language` VARCHAR(10),
+    `language_id` INT UNSIGNED NOT NULL,
+    FOREIGN KEY (`language_id`) REFERENCES languages(`id`),
+    `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     `edited_by` varchar(100) NOT NULL DEFAULT ''

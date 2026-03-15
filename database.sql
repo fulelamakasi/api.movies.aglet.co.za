@@ -17,6 +17,22 @@ CREATE TABLE languages (
     UNIQUE (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DROP TABLE IF EXISTS `contactus`;
+CREATE TABLE contactus (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
+    `phone_number` VARCHAR(20) NOT NULL,
+    `company_name` VARCHAR(100) NOT NULL,
+    `message` TEXT NOT NULL,
+    `is_actioned` TINYINT(1) NOT NULL DEFAULT '0',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    `edited_by` varchar(100) NOT NULL DEFAULT '',
+    FULLTEXT `descriptionx` (`description`),
+    UNIQUE (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

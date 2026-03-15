@@ -3,3 +3,8 @@
 
 # CHANGE CRON PATH
 05 02 * * * /usr/bin/python3 /home/user/workspace/cronFetchMovies.py
+
+
+# SWAGGER DOCUMENTATION
+- Go to the Swagger Editor. https://editor.swagger.io/
+- Copy contents of agletMovieDB.yaml and paste in swagger editor 

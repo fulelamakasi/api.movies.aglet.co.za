@@ -7,8 +7,6 @@ import hashlib
 import os
 from dotenv import load_dotenv
 import json
-import re
-import socket
 
 app = Flask(__name__)
 
@@ -182,6 +180,107 @@ def renew_token():
         cursor.close()
         conn.close()
 
+##### CONTACT US #####
+@app.route('/api/contact_us/v1', methods=['POST'])
+@has_permission('create_contact_us')
+def create_contact_us():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    phone_number = data.get('phone_number')
+    company_name = data.get('company_name')
+    message = data.get('message')
+    is_actioned = data.get('is_actioned')
+
+    if not name or not email or not phone_number or not company_name or not message or not is_actioned:
+        return jsonify({'error': 'Required fields are missing'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('INSERT INTO contact_us (name, email, phone_number, company_name, message, is_actioned) VALUES (%s, %s, %s)', (name, email, phone_number, company_name, message, is_actioned))
+        conn.commit()
+        return jsonify({'message': 'Contact_us created successfully'}), 201
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/contact_us/v1/<int:contact_us_id>', methods=['PUT'])
+@has_permission('update_contact_us')
+def update_contact_us(contact_us_id):
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    phone_number = data.get('phone_number')
+    company_name = data.get('company_name')
+    message = data.get('message')
+    is_actioned = data.get('is_actioned')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE permissions SET name = %s, email = %s, phone_number = %s, company_name = %s, message = %s, is_actioned = %s, WHERE id = %s', (name, email, phone_number, company_name, message, is_actioned, contact_us_id))
+        conn.commit()
+        return jsonify({'message': 'Language updated successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/contact_us/v1/<int:contact_us_id>', methods=['DELETE'])
+@has_permission('delete_contact_us')
+def delete_contact_us(contact_us_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    is_deleted = 1
+
+    try:
+        #cursor.execute('DELETE FROM contact_us WHERE id = %s', (contact_us_id,))
+        cursor.execute('UPDATE contact_us SET is_deleted = %s WHERE id = %s', (is_deleted, contact_us_id))
+        conn.commit()
+        return jsonify({'message': 'contact_us deleted successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/contact_us/v1', methods=['GET'])
+@has_permission('get_all_contact_us')
+def get_all_contact_us():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM contact_us')
+        contact_us = cursor.fetchall()
+        return jsonify(contact_us), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/contact_us/v1/<int:contact_us_id>', methods=['GET'])
+@has_permission('get_contact_us_by_id')
+def get_contact_us_by_id(contact_us_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM contact_us WHERE id = %s', (contact_us_id,))
+        contact_us = cursor.fetchone()
+        if contact_us:
+            return jsonify(contact_us), 200
+        else:
+            return jsonify({'error': 'Contact Us Message not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 ##### LANGUAGES #####
 @app.route('/api/languages/v1', methods=['POST'])
 @has_permission('create_languages')
@@ -217,7 +316,7 @@ def update_language(language_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE permissions SET name = %s, description = %s, is_active = %s WHERE id = %s', (name, description, is_active, language_id))
+        cursor.execute('UPDATE languages SET name = %s, description = %s, is_active = %s WHERE id = %s', (name, description, is_active, language_id))
         conn.commit()
         return jsonify({'message': 'Language updated successfully'}), 200
     except mysql.connector.Error as err:
@@ -235,7 +334,7 @@ def delete_language(language_id):
 
     try:
         #cursor.execute('DELETE FROM permissions WHERE id = %s', (permission_id,))
-        cursor.execute('UPDATE permissions SET is_deleted = %s WHERE id = %s', (is_deleted, language_id))
+        cursor.execute('UPDATE languages SET is_deleted = %s WHERE id = %s', (is_deleted, language_id))
         conn.commit()
         return jsonify({'message': 'Language deleted successfully'}), 200
     except mysql.connector.Error as err:
@@ -445,7 +544,6 @@ def get_movies_by_language(language_id):
     finally:
         cursor.close()
         conn.close()
-
 
 ##### PERMISSIONS #####
 @app.route('/api/permissions/v1', methods=['POST'])

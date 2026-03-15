@@ -20,24 +20,18 @@ headers = {
 }
 
 def get_movies():
-
     movies = []
 
     for page in range(1, 6): 
-
         url = f"{BASE_URL}?page={page}"
-
         response = requests.get(url, headers=headers)
-
         data = response.json()
-
         movies.extend(data["results"])
 
     return movies
 
 
 def save_movies(movies):
-
     connection = pymysql.connect(
         host=DB_HOST,
         user=DB_USER,
@@ -46,10 +40,9 @@ def save_movies(movies):
     )
 
     cursor = connection.cursor()
-# first check if movie was not previously created by tmdb_id
     sql = """
     INSERT INTO movies
-    (tmdb_id,title,overview,release_date,poster_path,backdrop_path,popularity,vote_average,vote_count,language)
+    (tmdb_id,title,overview,release_date,poster_path,backdrop_path,popularity,vote_average,vote_count,language_id)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     ON DUPLICATE KEY UPDATE
     title=VALUES(title),
@@ -71,7 +64,7 @@ def save_movies(movies):
             movie.get("popularity"),
             movie.get("vote_average"),
             movie.get("vote_count"),
-            movie.get("original_language")
+            get_language_id(movie.get("original_language"))
         ))
 
     connection.commit()
@@ -79,6 +72,22 @@ def save_movies(movies):
     cursor.close()
     connection.close()
 
+def get_language_id(name):
+    connection = pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASS,
+        database=DB_NAME
+    )
+
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM languages WHERE name = %s LIMIT 1', (name,))
+    languages = cursor.fetchall()
+
+    if languages:
+        return languages['id']
+    else:
+        return 1
 
 def main():
 

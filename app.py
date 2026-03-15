@@ -7,10 +7,6 @@ import hashlib
 import os
 from dotenv import load_dotenv
 import json
-from pathlib import Path
-import datetime
-from datetime import datetime
-import logging
 import re
 import socket
 
@@ -186,6 +182,119 @@ def renew_token():
         cursor.close()
         conn.close()
 
+##### LANGUAGES #####
+@app.route('/api/languages/v1', methods=['POST'])
+@has_permission('create_languages')
+def create_languages():
+    data = request.json
+    name = data.get('name')
+    description = data.get('description')
+    is_active = 1
+
+    if not name:
+        return jsonify({'error': 'Required fields are missing'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('INSERT INTO languages (name, description, is_active) VALUES (%s, %s, %s)', (name, description, is_active))
+        conn.commit()
+        return jsonify({'message': 'Language created successfully'}), 201
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/languages/v1/<int:language_id>', methods=['PUT'])
+@has_permission('update_language')
+def update_language(language_id):
+    data = request.json
+    name = data.get('name')
+    description = data.get('description')
+    is_active = data.get('is_active')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE permissions SET name = %s, description = %s, is_active = %s WHERE id = %s', (name, description, is_active, language_id))
+        conn.commit()
+        return jsonify({'message': 'Language updated successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/languages/v1/<int:language_id>', methods=['DELETE'])
+@has_permission('delete_language')
+def delete_language(language_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    is_deleted = 1
+
+    try:
+        #cursor.execute('DELETE FROM permissions WHERE id = %s', (permission_id,))
+        cursor.execute('UPDATE permissions SET is_deleted = %s WHERE id = %s', (is_deleted, language_id))
+        conn.commit()
+        return jsonify({'message': 'Language deleted successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/languages/v1', methods=['GET'])
+@has_permission('get_all_languages')
+def get_all_languages():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM languages')
+        languages = cursor.fetchall()
+        return jsonify(languages), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/languages/v1/<int:language_id>', methods=['GET'])
+@has_permission('get_language_by_id')
+def get_language_by_id(language_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM languages WHERE id = %s', (language_id,))
+        language = cursor.fetchone()
+        if language:
+            return jsonify(language), 200
+        else:
+            return jsonify({'error': 'Language not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/languages/get-active/v1/<int:is_active>', methods=['GET'])
+@has_permission('get_active_languages')
+def get_active_languages(is_active):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM languages WHERE is_active = %s', (is_active,))
+        languages = cursor.fetchall()
+        if languages:
+            return jsonify(languages), 200
+        else:
+            return jsonify({'error': 'Languages not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 ##### MOVIES #####
 @app.route('/api/movies/v1', methods=['POST'])
 @has_permission('create_movie')
@@ -201,15 +310,15 @@ def create_movies():
     popularity = data.get('popularity')
     vote_average = data.get('vote_average')
     vote_count = data.get('vote_count')
-    language = data.get('language')
+    language_id = data.get('language_id')
 
-    if not tmdb_id or not title or not overview or not release_date or not poster_path or not backdrop_path or not popularity or not vote_average or not vote_count or not language:
+    if not tmdb_id or not title or not overview or not release_date or not poster_path or not backdrop_path or not popularity or not vote_average or not vote_count or not language_id:
         return jsonify({'error': 'Required fields are missing'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO movies(tmdb_id,title,overview,release_date,poster_path,backdrop_path,popularity,vote_average,vote_count,language) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (tmdb_id,title,overview,release_date,poster_path,backdrop_path,popularity,vote_average,vote_count,language))
+        cursor.execute('INSERT INTO movies(tmdb_id,title,overview,release_date,poster_path,backdrop_path,popularity,vote_average,vote_count,language_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (tmdb_id,title,overview,release_date,poster_path,backdrop_path,popularity,vote_average,vote_count,language))
         conn.commit()
         return jsonify({'message': 'Movie created successfully'}), 201
     except mysql.connector.Error as err:
@@ -232,15 +341,15 @@ def update_movie(movie_id):
     popularity = data.get('popularity')
     vote_average = data.get('vote_average')
     vote_count = data.get('vote_count')
-    language = data.get('language')
+    language_id = data.get('language_id')
 
-    if not tmdb_id or not title or not overview or not release_date or not poster_path or not backdrop_path or not popularity or not vote_average or not vote_count or not language:
+    if not tmdb_id or not title or not overview or not release_date or not poster_path or not backdrop_path or not popularity or not vote_average or not vote_count or not language_id:
         return jsonify({'error': 'Required fields are missing'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE movies SET tmdb_id = %s, title = %s, overview = %s, release_date = %s, poster_path = %s, backdrop_path = %s, popularity = %s, vote_average = %s, vote_count = %s, language = %s WHERE id = %s', (tmdb_id, title, overview, release_date, poster_path, backdrop_path, popularity, vote_average, vote_count, language, movie_id))
+        cursor.execute('UPDATE movies SET tmdb_id = %s, title = %s, overview = %s, release_date = %s, poster_path = %s, backdrop_path = %s, popularity = %s, vote_average = %s, vote_count = %s, language = %s WHERE id = %s', (tmdb_id, title, overview, release_date, poster_path, backdrop_path, popularity, vote_average, vote_count, language_id, movie_id))
         conn.commit()
         return jsonify({'message': 'Movie updated successfully'}), 200
     except mysql.connector.Error as err:
@@ -311,6 +420,24 @@ def get_active_movies(is_active):
         movies = cursor.fetchall()
         if movies:
             return json.dumps(movies, default=str), 200
+        else:
+            return jsonify({'error': 'Movies not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movies/get-by-language/v1/<int:language_id>', methods=['GET'])
+@has_permission('get_movies_by_language')
+def get_movies_by_language(language_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM movies WHERE language_id = %s', (language_id,))
+        movies = cursor.fetchall()
+        if movies:
+            return jsonify(movies), 200
         else:
             return jsonify({'error': 'Movies not found'}), 204
     except mysql.connector.Error as err:

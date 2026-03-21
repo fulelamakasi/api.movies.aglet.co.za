@@ -1,6 +1,7 @@
 import requests
 import pymysql
 import os
+import argparse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,30 +15,44 @@ DB_PASS = os.getenv("DB_PASS")
 DB_NAME = os.getenv("DB_NAME")
 BASE_URL = os.getenv("BASE_URL")
 
+MOVIES_PER_PAGE = 20
+
 headers = {
     "Authorization": f"Bearer {ACCESS_TOKEN}",
     "Content-Type": "application/json;charset=utf-8"
 }
+db_config = {
+    'host': os.getenv('DBHOST', "127.0.0.1"),
+    'user': os.getenv('DBUSER', "root"),
+    'password': os.getenv('DBPASS', "123456"),
+    'database': os.getenv('DB', "aglet_movies")
+}
 
-def get_movies():
+def get_db_connection():
+    try:
+        conn = pymysql.connect(**db_config)
+        return conn
+    except pymysql.MySQLError as err:
+        print(f"Error connecting to the database: {err}")
+
+def get_movies(limit=100):
     movies = []
+    total_pages = (limit + MOVIES_PER_PAGE - 1)
 
-    for page in range(1, 6): 
+    for page in range(1, total_pages + 1):
         url = f"{BASE_URL}?page={page}"
         response = requests.get(url, headers=headers)
         data = response.json()
         movies.extend(data["results"])
 
-    return movies
+        if len(movies) >= limit:
+            break
+
+    return movies[:limit]
 
 
 def save_movies(movies):
-    connection = pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME
-    )
+    connection = get_db_connection()
 
     cursor = connection.cursor()
     sql = """
@@ -73,12 +88,7 @@ def save_movies(movies):
     connection.close()
 
 def get_language_id(name):
-    connection = pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASS,
-        database=DB_NAME
-    )
+    connection = get_db_connection()
 
     cursor = connection.cursor(dictionary=True)
     cursor.execute('SELECT * FROM languages WHERE name = %s LIMIT 1', (name,))
@@ -90,8 +100,11 @@ def get_language_id(name):
         return 1
 
 def main():
+    parser = argparse.ArgumentParser(description="Fetch and sync movies from TMDB")
+    parser.add_argument("--limit", type=int, default=100, help="Number of movies to fetch (default: 100)")
+    args = parser.parse_args()
 
-    movies = get_movies()
+    movies = get_movies(limit=args.limit)
 
     save_movies(movies)
 

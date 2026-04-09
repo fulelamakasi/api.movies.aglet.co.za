@@ -14,7 +14,7 @@ def test_create_user(client, headers):
         json=payload
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 def test_get_active_users(client, headers):
     response = requests.get(
@@ -57,9 +57,9 @@ def test_update_user(client, headers):
     payload = {
         "id": 10,
         "email": "jane@aglet.co.za",
-        "first_name": "Jane Doe",
+        "name": "Jane Doe",
         "phonenumber": "0827654321",
-        "password": "7c222fb2927d828af22f592134e8932480637c0d",
+        "password": "12345678",
         "is_active": 1,
         "is_deleted": 0,
         "token": "10235463-8728-0913-9837-127634524310",

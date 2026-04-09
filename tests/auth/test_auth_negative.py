@@ -12,7 +12,7 @@ def test_login_missing_body(client, headers):
 
 def test_login_invalid_credentials(client, headers):
     payload = {
-        "username": "wrong@aglet.co.za",
+        "email": "wrong@aglet.co.za",
         "password": "wrongpass"
     }
 
@@ -26,7 +26,7 @@ def test_login_invalid_credentials(client, headers):
 
 def test_login_missing_header(client):
     payload = {
-        "username": "admin@aglet.co.za",
+        "email": "admin@aglet.co.za",
         "password": "password"
     }
 

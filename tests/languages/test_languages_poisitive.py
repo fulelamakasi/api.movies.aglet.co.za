@@ -12,11 +12,11 @@ def test_create_language(client, headers):
         json=payload
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 def test_get_active_languages(client, headers):
     response = requests.get(
-        f"{client}/language/get-active/v1/1",
+        f"{client}/languages/get-active/v1/1",
         headers=headers
     )
 
@@ -43,7 +43,7 @@ def test_get_language_by_id(client, headers):
 
 def test_get_inactive_languages(client, headers):
     response = requests.get(
-        f"{client}/language/get-active/v1/0",
+        f"{client}/languages/get-active/v1/0",
         headers=headers
     )
 

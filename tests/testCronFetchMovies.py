@@ -1,6 +1,10 @@
-from cronFetchMovies import fetch_movies
-from cronFetchMovies import insert_movie
-from cronFetchMovies import run_sync
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+from cronFetchMovies import get_movies, save_movies, get_language_id
+
 
 class MockResponse:
 
@@ -11,70 +15,94 @@ class MockResponse:
                     "id": 123,
                     "title": "Test Movie",
                     "overview": "A test movie",
-                    "release_date": "2025-01-01"
+                    "release_date": "2025-01-01",
+                    "poster_path": "/test.jpg",
+                    "backdrop_path": "/backdrop.jpg",
+                    "popularity": 50.0,
+                    "vote_average": 7.5,
+                    "vote_count": 100,
+                    "original_language": "en"
                 }
             ]
         }
 
-def test_fetch_movies(mocker):
 
-    mocker.patch("requests.get", return_value=MockResponse())
+def test_get_movies(mocker):
 
-    headers = {"Authorization": "Bearer test"}
+    mocker.patch("cronFetchMovies.requests.get", return_value=MockResponse())
 
-    movies = fetch_movies(headers, pages=1)
+    movies = get_movies(limit=1)
 
     assert len(movies) == 1
     assert movies[0]["title"] == "Test Movie"
 
-def test_insert_movie():
 
-    class MockCursor:
+def test_get_movies_pagination(mocker):
 
-        def __init__(self):
-            self.executed = False
+    mocker.patch("cronFetchMovies.requests.get", return_value=MockResponse())
 
-        def execute(self, sql, params):
-            self.executed = True
-            self.params = params
+    movies = get_movies(limit=1)
 
-    cursor = MockCursor()
+    assert len(movies) <= 1
 
-    movie = {
-        "id": 999,
-        "title": "Unit Test Movie",
-        "overview": "Testing insert",
-        "release_date": "2024-10-10"
-    }
 
-    insert_movie(cursor, movie)
-
-    assert cursor.executed
-    assert cursor.params[1] == "Unit Test Movie"
-
-def test_run_sync(mocker):
-
-    mock_connection = mocker.Mock()
+def test_save_movies(mocker):
 
     mock_cursor = mocker.Mock()
-
+    mock_connection = mocker.Mock()
     mock_connection.cursor.return_value = mock_cursor
 
-    mocker.patch(
-        "fetch_movies.fetch_movies",
-        return_value=[
-            {
-                "id": 1,
-                "title": "Cron Test Movie",
-                "overview": "Test",
-                "release_date": "2024-01-01"
-            }
-        ]
-    )
+    mocker.patch("cronFetchMovies.get_db_connection", return_value=mock_connection)
+    mocker.patch("cronFetchMovies.get_language_id", return_value=1)
 
-    headers = {"Authorization": "Bearer test"}
+    movies = [
+        {
+            "id": 999,
+            "title": "Unit Test Movie",
+            "overview": "Testing save",
+            "release_date": "2024-10-10",
+            "poster_path": "/poster.jpg",
+            "backdrop_path": "/backdrop.jpg",
+            "popularity": 10.0,
+            "vote_average": 6.0,
+            "vote_count": 50,
+            "original_language": "en"
+        }
+    ]
 
-    run_sync(headers, mock_connection)
+    save_movies(movies)
 
     assert mock_cursor.execute.called
     assert mock_connection.commit.called
+    assert mock_cursor.close.called
+    assert mock_connection.close.called
+
+
+def test_get_language_id_found(mocker):
+
+    mock_cursor = mocker.Mock()
+    mock_cursor.fetchone.return_value = {"id": 5}
+
+    mock_connection = mocker.Mock()
+    mock_connection.cursor.return_value = mock_cursor
+
+    mocker.patch("cronFetchMovies.get_db_connection", return_value=mock_connection)
+
+    result = get_language_id("en")
+
+    assert result == 5
+
+
+def test_get_language_id_not_found(mocker):
+
+    mock_cursor = mocker.Mock()
+    mock_cursor.fetchone.return_value = None
+
+    mock_connection = mocker.Mock()
+    mock_connection.cursor.return_value = mock_cursor
+
+    mocker.patch("cronFetchMovies.get_db_connection", return_value=mock_connection)
+
+    result = get_language_id("xx")
+
+    assert result == 1

@@ -2,7 +2,7 @@ import requests
 
 def test_login_success(client, headers):
     payload = {
-        "username": "admin@aglet.co.za",
+        "email": "admin@aglet.co.za",
         "password": "12345678"
     }
 

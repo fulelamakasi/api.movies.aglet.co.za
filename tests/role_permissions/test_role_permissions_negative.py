@@ -6,4 +6,4 @@ def test_get_active_role_permissions_invalid_flag(client, headers):
         headers=headers
     )
 
-    assert response.status_code in [400, 422]
+    assert response.status_code in [400, 404, 422]

@@ -92,15 +92,17 @@ def save_movies(movies):
 def get_language_id(name):
     connection = get_db_connection()
 
-    cursor = connection.cursor()
+    cursor = connection.cursor(pymysql.cursors.DictCursor)
     cursor.execute('SELECT * FROM languages WHERE name = %s LIMIT 1', (name,))
-    languages = cursor.fetchall()
+    language = cursor.fetchone()
 
-    if languages:
-        return languages['id']
+    cursor.close()
+    connection.close()
+
+    if language:
+        return language['id']
     else:
         return 1
-
 def main():
     parser = argparse.ArgumentParser(description="Fetch and sync movies from TMDB")
     parser.add_argument("--limit", type=int, default=100, help="Number of movies to fetch (default: 100)")

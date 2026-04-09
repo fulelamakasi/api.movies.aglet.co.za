@@ -15,11 +15,11 @@ def test_create_contact_us(client, headers):
         json=payload
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 def test_get_non_actioned_contact_us(client, headers):
     response = requests.get(
-        f"{client}/language/get-active/v1/0",
+        f"{client}/languages/get-active/v1/0",
         headers=headers
     )
 
@@ -46,7 +46,7 @@ def test_get_contact_us_by_id(client, headers):
 
 def test_get_actioned_contact_us(client, headers):
     response = requests.get(
-        f"{client}/language/get-active/v1/1",
+        f"{client}/languages/get-active/v1/1",
         headers=headers
     )
 

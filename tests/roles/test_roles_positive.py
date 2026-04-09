@@ -12,7 +12,7 @@ def test_create_role(client, headers):
         json=payload
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
 
 def test_get_active_roles(client, headers):
     response = requests.get(

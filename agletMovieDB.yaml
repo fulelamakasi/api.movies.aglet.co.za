@@ -1074,6 +1074,423 @@ paths:
                 items:
                   $ref: '#/components/schemas/ErrorResponse'
 
+  /movie_favourites/v1:
+    post:
+      tags:
+        - MovieFavourite
+      summary: Create a new user movie record for an external & internal organisation.
+      description: >-
+        Create a new movie favourite record.
+      operationId: create_movie_favourite
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieFavouriteRequest'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieFavouriteResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie Favourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - MovieFavourite
+      summary: Fetch a full list of active Movie Favourites
+      description: Fetch a full list of role Movie Favourites. The list is sorted by the date created order.
+      operationId: get_all_movie_favourites
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieFavouriteResponse'
+
+  /movie_favourites/v1/{movie_favourite_id}:
+    get:
+      tags:
+        - MovieFavourite
+      summary: Get for Movie Favourite By id.
+      description: >-
+        Search for MovieFavourite by id. 
+      operationId: get_movie_favourite_by_id
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_favourite_id
+          in: path
+          description: >-
+            The movie_favourite_id of the organisation whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieFavouriteResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie Favourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - MovieFavourite
+      summary: Update a Movie Favourite record.
+      description: >-
+        Update an existing Movie Favourite record.  The record with the ID must exist.
+      operationId: update_movie_favourite
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_favourite_id
+          in: path
+          description: >-
+            The movie_favourite_id of the file whose values are required.
+          required: true
+          schema:
+            type: integer
+            example: 101
+      requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovieFavouriteResponse'          
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/MovieFavouriteResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Movie Favourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '412':
+          description: Precondition Failed - Resource has been modified
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - MovieFavourite
+      summary: Delete a Movie Favourite record.
+      description: >-
+        Delete an existing MovieFavourite record.  The record with the ID may or may not exist.
+      operationId: delete_movie_favourite
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_favourite_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '204':
+          description: Movie Favourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /movie_favourites/get-active/v1/{is_active}:
+    get:
+      tags:
+        - MovieFavourite
+      summary: Get active or in active Movie Favourite list.
+      description: >-
+        Search for active or in active Movie Favourite list. 
+      operationId: get_active_movie_favourites
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: is_active
+          in: path
+          description: >-
+            The Movie Favourite flag either 0 or 1
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieFavouriteResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: MovieFavourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /movie_favourites/get-by-user/v1/{user_id}:
+    get:
+      tags:
+        - MovieFavourite
+      summary: Get active or in active Movie Favourite list.
+      description: >-
+        Search for active or in active Movie Favourite list. 
+      operationId: get_movie_favourites_by_user
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: user_id
+          in: path
+          description: >-
+            The user id being queried
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieFavouriteResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie Favourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
+  /movie_favourites/get-by-movie/v1/{movie_id}:
+    get:
+      tags:
+        - MovieFavourite
+      summary: Get all Movie Favourites list by role.
+      description: >-
+        Search for active or in active Movie Favourite list. 
+      operationId: get_movie_favourites_by_movie
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: movie_id
+          in: path
+          description: >-
+            The movie id being queried
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MovieFavouriteResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: Movie Favourite record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
   /permissions/v1:
     post:
       tags:
@@ -2773,6 +3190,63 @@ paths:
                 items:
                   $ref: '#/components/schemas/UserResponse'
 
+  /users/get-by-token/v1/{token}:
+    get:
+      tags:
+        - Users
+      summary: Get active or in active user list.
+      description: >-
+        Search for active or in active user list. 
+      operationId: get_user_by_token
+      parameters:
+        - name: User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+        - name: token
+          in: path
+          description: >-
+            The token of the user being queried
+          required: true
+          schema:
+            type: string
+            example: "10235463-8728-0913-9837-127634524310"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '404':
+          description: User record not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'          
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     ContactUsRequest:
@@ -3118,6 +3592,72 @@ components:
           language_id: "1",
           is_deleted: 0,
           created_at: "2026-03-15 19:00:00",
+          updated_at: ""
+        }
+
+    MovieFavouriteRequest:
+      description: A record for a favourite movies for a particular user
+      required:
+        - movie_id
+        - user_id
+      type: object
+      properties:
+        movie_id:
+          description: The id of the movie the user likes
+          type: integer
+          example: "95"
+        user_id:
+          description: The id of the user from the application
+          type: integer
+          example: "16"  
+      example:
+        {
+          movie_id: 95,
+          user_id: 16
+        }
+
+    MovieFavouriteResponse:
+      description: A record for a favourite movies for a particular user
+      type: object
+      properties:
+        id:
+          description: >-
+            The unique identifier of the user role record.  This is ignored when adding a new record.  
+            The service allocates an new unique ID to this record.
+          type: integer
+          example: "6"
+        movie_id:
+          description: The id of the role in the application
+          type: integer
+          example: "95"
+        user_id:
+          description: The id of the user from the application
+          type: integer
+          example: "16"  
+        is_active:
+          description: A flag to state whether the movie favourite for the user is active or not.
+          type: integer
+          example: "0"
+        is_deleted:
+          description: A flag to state whether the movie favourite for the user was removed or not.
+          type: integer
+          example: "0"          
+        created_at:
+          description: The system generated date which a record was created
+          type: string
+          example: "2020-03-26 19:00:00"
+        updated_at:
+          description: The system generated date which whenever a record is modified it gets updated
+          type: string
+          example: "2020-03-27 19:01:59"
+      example:
+        {
+          id: 3,
+          movie_id: 95,
+          user_id: 16,
+          is_active: 1,
+          is_deleted: 0,
+          created_at: "2020-03-26 19:00:00",
           updated_at: ""
         }
 

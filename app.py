@@ -20,11 +20,16 @@ CORS(app, resources={
 
 load_dotenv()
 
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_NAME = os.getenv("DB_NAME")
+
 db_config = {
-    'host': os.getenv('DBHOST', "127.0.0.1"),
-    'user': os.getenv('DBUSER', "root"),
-    'password': os.getenv('DBPASS', "123456"),
-    'database': os.getenv('DB', "aglet_movies")
+    'host': os.getenv('DB_HOST', "127.0.0.1"),
+    'user': os.getenv('DB_USER', "aglet_user"),
+    'password': os.getenv('DB_PASS', "12345678"),
+    'database': os.getenv('DB_NAME', "aglet_movies")
 }
 
 def get_db_connection():
@@ -43,7 +48,7 @@ def has_permission(permission_name):
                 return jsonify({'error': 'User ID is required'}), 400
 
             conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
+            cursor = conn.cursor()
 
             try:
                 # Check if the user has the required permission
@@ -190,15 +195,15 @@ def create_contact_us():
     phone_number = data.get('phone_number')
     company_name = data.get('company_name')
     message = data.get('message')
-    is_actioned = data.get('is_actioned')
+    is_actioned = 0
 
-    if not name or not email or not phone_number or not company_name or not message or not is_actioned:
+    if not name or not email or not phone_number or not company_name or not message:
         return jsonify({'error': 'Required fields are missing'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('INSERT INTO contact_us (name, email, phone_number, company_name, message, is_actioned) VALUES (%s, %s, %s)', (name, email, phone_number, company_name, message, is_actioned))
+        cursor.execute('INSERT INTO contactus (name, email, phone_number, company_name, message, is_actioned) VALUES (%s, %s, %s, %s, %s, %s)', (name, email, phone_number, company_name, message, is_actioned))
         conn.commit()
         return jsonify({'message': 'Contact_us created successfully'}), 201
     except mysql.connector.Error as err:
@@ -221,9 +226,9 @@ def update_contact_us(contact_us_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE permissions SET name = %s, email = %s, phone_number = %s, company_name = %s, message = %s, is_actioned = %s, WHERE id = %s', (name, email, phone_number, company_name, message, is_actioned, contact_us_id))
+        cursor.execute('UPDATE contactus SET name = %s, email = %s, phone_number = %s, company_name = %s, message = %s, is_actioned = %s WHERE id = %s', (name, email, phone_number, company_name, message, is_actioned, contact_us_id))
         conn.commit()
-        return jsonify({'message': 'Language updated successfully'}), 200
+        return jsonify({'message': 'Contact Us updated successfully'}), 200
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
     finally:
@@ -238,8 +243,8 @@ def delete_contact_us(contact_us_id):
     is_deleted = 1
 
     try:
-        #cursor.execute('DELETE FROM contact_us WHERE id = %s', (contact_us_id,))
-        cursor.execute('UPDATE contact_us SET is_deleted = %s WHERE id = %s', (is_deleted, contact_us_id))
+        #cursor.execute('DELETE FROM contactus WHERE id = %s', (contact_us_id,))
+        cursor.execute('UPDATE contactus SET is_deleted = %s WHERE id = %s', (is_deleted, contact_us_id))
         conn.commit()
         return jsonify({'message': 'contact_us deleted successfully'}), 200
     except mysql.connector.Error as err:
@@ -254,7 +259,7 @@ def get_all_contact_us():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute('SELECT * FROM contact_us')
+        cursor.execute('SELECT * FROM contactus')
         contact_us = cursor.fetchall()
         return jsonify(contact_us), 200
     except mysql.connector.Error as err:
@@ -269,7 +274,7 @@ def get_contact_us_by_id(contact_us_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute('SELECT * FROM contact_us WHERE id = %s', (contact_us_id,))
+        cursor.execute('SELECT * FROM contactus WHERE id = %s', (contact_us_id,))
         contact_us = cursor.fetchone()
         if contact_us:
             return jsonify(contact_us), 200
@@ -539,6 +544,156 @@ def get_movies_by_language(language_id):
             return jsonify(movies), 200
         else:
             return jsonify({'error': 'Movies not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+##### MOVIE_FAVORITES #####
+@app.route('/api/movie_favourites/v1', methods=['POST'])
+@has_permission('create_movie_favourite')
+def create_movie_favourite():
+    data = request.json
+    movie_id = data.get('movie_id')
+    user_id = data.get('user_id')
+    is_active = 1
+
+    if not user_id or not movie_id:
+        return jsonify({'error': 'Required fields are missing'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('INSERT INTO movie_favourites (user_id, movie_id, is_active) VALUES (%s, %s, %s)', (user_id, movie_id, is_active))
+        conn.commit()
+        return jsonify({'message': 'Movie Favourite created successfully'}), 201
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/v1/<int:movie_favourite_id>', methods=['PUT'])
+@has_permission('update_movie_favourite')
+def update_movie_favourite(movie_favourite_id):
+    data = request.json
+    movie_id = data.get('movie_id')
+    user_id = data.get('user_id')
+    is_active = data.get('is_active')
+    is_deleted = data.get('is_deleted')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('UPDATE movie_favourites SET movie_id = %s, user_id = %s, is_active = %s, is_deleted = %s WHERE id = %s', (movie_id, user_id, is_active, is_deleted, movie_favourite_id))
+        conn.commit()
+        return jsonify({'message': 'Movie Favourite updated successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/v1/<int:movie_favourite_id>', methods=['DELETE'])
+@has_permission('delete_movie_favourite')
+def delete_movie_favourite(movie_favourite_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    is_deleted = 1
+
+    try:
+        #cursor.execute('DELETE FROM user_roles WHERE id = %s', (user_role_id,))
+        cursor.execute('UPDATE movie_favourites SET is_deleted = %s WHERE id = %s', (is_deleted, movie_favourite_id))
+        conn.commit()
+        return jsonify({'message': 'Movie Favourite deleted successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/v1', methods=['GET'])
+@has_permission('get_all_movie_favourite')
+def get_all_movie_favourites():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM movie_favourites')
+        movie_favourites = cursor.fetchall()
+        return jsonify(movie_favourites), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/v1/<int:movie_favourite_id>', methods=['GET'])
+@has_permission('get_movie_favourite_by_id')
+def get_movie_favourite_by_id(movie_favourite_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM movie_favourites WHERE id = %s', (movie_favourite_id,))
+        user_role = cursor.fetchone()
+        if user_role:
+            return jsonify(user_role), 200
+        else:
+            return jsonify({'error': 'Movie Favourite not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/get-by-movie/v1/<int:movie_id>', methods=['GET'])
+@has_permission('get_movie_favourites_by_movie')
+def get_movie_favourites_by_movie(movie_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM movie_favourites WHERE movie_id = %s', (movie_id,))
+        movie_favourites = cursor.fetchall()
+        if movie_favourites:
+            return jsonify(movie_favourites), 200
+        else:
+            return jsonify({'error': 'Movie Favourite not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/get-by-user/v1/<int:user_id>', methods=['GET'])
+@has_permission('get_movie_favourites_by_user')
+def get_movie_favourites_by_user(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM movie_favourites WHERE user_id = %s', (user_id,))
+        movie_favourites = cursor.fetchall()
+        if movie_favourites:
+            return jsonify(movie_favourites), 200
+        else:
+            return jsonify({'error': 'Movie Favourite not found'}), 204
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/movie_favourites/get-active/v1/<int:is_active>', methods=['GET'])
+@has_permission('get_active_movie_favourites')
+def get_active_movie_favourites(is_active):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT * FROM movie_favourites WHERE is_active = %s', (is_active,))
+        movie_favourites = cursor.fetchall()
+        if movie_favourites:
+            return jsonify(movie_favourites), 200
+        else:
+            return jsonify({'error': 'Movie Favourite not found'}), 204
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
     finally:
@@ -1075,25 +1230,22 @@ def get_active_user_roles(is_active):
 @has_permission('create_user')
 def create_user():
     data = request.json
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
     email = data.get('email')
+    name = data.get('name')
     phonenumber = data.get('phonenumber')
-    company_id = data.get('company_id')
     password = hashlib.md5(phonenumber[-4:].encode("utf-8")).hexdigest()
     token = str(uuid.uuid4())
     is_active = 1
-    reset_password = 1
+    is_deleted = 0
 
-    if not first_name or not last_name or not email or not phonenumber or not company_id:
+    if not name or not email or not phonenumber:
         return jsonify({'error': 'Required fields are missing'}), 400
-    
-    name = first_name + " " + last_name
 
     conn = get_db_connection()
     cursor = conn.cursor()
+
     try:
-        cursor.execute('INSERT INTO users (name, first_name, last_name, email, phonenumber, password, is_active, reset_password, token, company_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (name, first_name, last_name, email, phonenumber, password, is_active, reset_password, token, company_id))
+        cursor.execute('INSERT INTO users (name, email, phonenumber, password, is_active, is_deleted, token) VALUES (%s, %s, %s, %s, %s, %s, %s)', (name, email, phonenumber, password, is_active, is_deleted, token))
         conn.commit()
         return jsonify({'message': 'User created successfully'}), 201
     except mysql.connector.Error as err:
@@ -1106,20 +1258,21 @@ def create_user():
 @has_permission('update_user')
 def update_user(user_id):
     data = request.json
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
     name = data.get('name')
+    email = data.get('email')
     phonenumber = data.get('phonenumber')
     password = hashlib.md5(data.get('password').encode("utf-8")).hexdigest()
     is_active = data.get('is_active')
-    reset_password = data.get('reset_password')
+    is_deleted = data.get('is_deleted')
     token = data.get('token')
-    company_id = data.get('company_id')
+
+    if not name or not email or not phonenumber:
+        return jsonify({'error': 'Required fields are missing'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE users SET name = %s, first_name = %s, last_name = %s, phonenumber = %s, password = %s, is_active = %s, reset_password = %s, token = %s, company_id = %s WHERE id = %s', (name, first_name, last_name, phonenumber, password, is_active, reset_password, token, company_id, user_id))
+        cursor.execute('UPDATE users SET name = %s, phonenumber = %s, password = %s, is_active = %s, is_deleted = %s, token = %s WHERE id = %s', (name, phonenumber, password, is_active, is_deleted, token, user_id))
         conn.commit()
         return jsonify({'message': 'User updated successfully'}), 200
     except mysql.connector.Error as err:
@@ -1197,13 +1350,13 @@ def get_active_users(is_active):
         cursor.close()
         conn.close()
 
-@app.route('/api/users/get-by-company/v1/<int:company_id>', methods=['GET'])
-@has_permission('get_users_by_company')
-def get_users_by_company(company_id):
+@app.route('/api/users/get-by-token/v1/<string:token>', methods=['GET'])
+@has_permission('get_user_by_token')
+def get_user_by_token(token):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute('SELECT * FROM users WHERE company_id = %s', (company_id,))
+        cursor.execute('SELECT * FROM users WHERE token = %s', (token,))
         users = cursor.fetchall()
         if users:
             return jsonify(users), 200
@@ -1214,7 +1367,6 @@ def get_users_by_company(company_id):
     finally:
         cursor.close()
         conn.close()
-
 
 @app.errorhandler(404)
 def not_found(error):

@@ -22,15 +22,17 @@ headers = {
     "Content-Type": "application/json;charset=utf-8"
 }
 db_config = {
-    'host': os.getenv('DBHOST', "127.0.0.1"),
-    'user': os.getenv('DBUSER', "root"),
-    'password': os.getenv('DBPASS', "123456"),
-    'database': os.getenv('DB', "aglet_movies")
+    'host': os.getenv('DB_HOST', "127.0.0.1"),
+    'user': os.getenv('DB_USER', "aglet_user"),
+    'password': os.getenv('DB_PASS', "12345678"),
+    'database': os.getenv('DB_NAME', "aglet_movies")
 }
 
 def get_db_connection():
     try:
         conn = pymysql.connect(**db_config)
+        if not conn:
+            return False
         return conn
     except pymysql.MySQLError as err:
         print(f"Error connecting to the database: {err}")
@@ -90,7 +92,7 @@ def save_movies(movies):
 def get_language_id(name):
     connection = get_db_connection()
 
-    cursor = connection.cursor(dictionary=True)
+    cursor = connection.cursor()
     cursor.execute('SELECT * FROM languages WHERE name = %s LIMIT 1', (name,))
     languages = cursor.fetchall()
 

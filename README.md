@@ -184,7 +184,7 @@ crontab -e
 Add the following line to run the sync daily at 02:05 AM:
 
 ```cron
-05 02 * * * /path/to/your/venv/bin/python /full/path/to/api.movies.aglet.co.za/cronFetchMovies.py >> /var/log/aglet_movies_cron.log 2>&1
+05 02 * * * /path/to/your/venv/bin/python /full/path/to/api.movies.aglet.co.za/cronFetchMovies.py --limit 250 >> /var/log/aglet_movies_cron.log 2>&1
 ```
 
 **Important notes:**

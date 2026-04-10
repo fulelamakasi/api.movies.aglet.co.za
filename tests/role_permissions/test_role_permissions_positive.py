@@ -41,6 +41,26 @@ def test_get_role_permission_by_id(client, headers):
 
     assert response.status_code in [200, 404]
 
+def test_get_role_permission_by_role(client, headers):
+    role_id = 1
+
+    response = requests.get(
+        f"{client}/role_permissions/get-by-role/v1/{role_id}",
+        headers=headers
+    )
+
+    assert response.status_code in [200, 404]
+
+def test_get_role_permission_by_permission(client, headers):
+    permission_id = 1
+
+    response = requests.get(
+        f"{client}/role_permissions/get-by-permission/v1/{permission_id}",
+        headers=headers
+    )
+
+    assert response.status_code in [200, 404]
+
 def test_get_inactive_role_permissions(client, headers):
     response = requests.get(
         f"{client}/role_permissions/get-active/v1/0",

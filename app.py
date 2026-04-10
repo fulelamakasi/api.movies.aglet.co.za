@@ -221,7 +221,7 @@ def update_contact_us(contact_us_id):
     phone_number = data.get('phone_number')
     company_name = data.get('company_name')
     message = data.get('message')
-    is_actioned = data.get('is_actioned')
+    is_actioned = 1
 
     conn = get_db_connection()
     cursor = conn.cursor()

@@ -730,12 +730,11 @@ def update_permission(permission_id):
     data = request.json
     name = data.get('name')
     description = data.get('description')
-    is_active = data.get('is_active')
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE permissions SET name = %s, description = %s, is_active = %s WHERE id = %s', (name, description, is_active, permission_id))
+        cursor.execute('UPDATE permissions SET name = %s, description = %s WHERE id = %s', (name, description, permission_id))
         conn.commit()
         return jsonify({'message': 'Permission updated successfully'}), 200
     except mysql.connector.Error as err:
@@ -843,12 +842,11 @@ def update_role_permission(role_permission_id):
     data = request.json
     role_id = data.get('role_id')
     permission_id = data.get('permission_id')
-    is_active = data.get('is_active')
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE permissions SET role_id = %s, permission_id = %s, is_active = %s WHERE id = %s', (role_id, permission_id, is_active, role_permission_id))
+        cursor.execute('UPDATE permissions SET role_id = %s, permission_id = %s WHERE id = %s', (role_id, permission_id, role_permission_id))
         conn.commit()
         return jsonify({'message': 'Role Permission updated successfully'}), 200
     except mysql.connector.Error as err:
@@ -993,12 +991,11 @@ def update_role(role_id):
     data = request.json
     name = data.get('name')
     description = data.get('description')
-    is_active = data.get('is_active')
 
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute('UPDATE roles SET name = %s, description = %s, is_active = %s WHERE id = %s', (name, description, is_active, role_id))
+        cursor.execute('UPDATE roles SET name = %s, description = %s WHERE id = %s', (name, description, role_id))
         conn.commit()
         return jsonify({'message': 'Role updated successfully'}), 200
     except mysql.connector.Error as err:
